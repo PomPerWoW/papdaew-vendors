@@ -1,41 +1,55 @@
 const mongoose = require('mongoose');
 
-// Branch schema without embedded location
-const branchSchema = new mongoose.Schema({
-  branchName: {
-    type: String,
-    required: true,
-  },
-  branchCode: {
-    type: String,
-    required: true,
-  },
-  // Reference to location in the location service
-  locationId: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    ref: 'Location', // This is just a reference name, not necessarily the actual model name in the location service
-  },
-  contactPhone: {
-    type: String,
-    required: true,
-  },
-  contactEmail: String,
-  branchManager: String,
-  businessHours: [
-    {
-      day: { type: Number, min: 0, max: 6 },
-      open: String,
-      close: String,
-      isClosed: { type: Boolean, default: false },
+const branchSchema = new mongoose.Schema(
+  {
+    branchName: {
+      type: String,
+      required: true,
     },
-  ],
-  status: {
-    type: String,
-    enum: ['active', 'inactive', 'temporary-closed', 'coming-soon'],
-    default: 'active',
+    branchCode: {
+      type: String,
+      required: true,
+    },
+    // Reference to location in the location service
+    locationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'Location',
+    },
+    contactPhone: {
+      type: String,
+      required: true,
+    },
+    contactEmail: String,
+    branchManager: String,
+    businessHours: [
+      {
+        _id: false,
+        day: { type: Number, min: 0, max: 6 },
+        open: String,
+        close: String,
+        isClosed: { type: Boolean, default: false },
+      },
+    ],
+    status: {
+      type: String,
+      enum: ['active', 'inactive', 'temporary-closed', 'coming-soon'],
+      default: 'active',
+    },
   },
-});
+  {
+    timestamps: true,
+    versionKey: 'version',
+    toJSON: {
+      virtuals: true,
+      transform: (doc, ret) => {
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: { virtuals: true },
+  }
+);
 
 const vendorSchema = new mongoose.Schema(
   {
@@ -84,6 +98,7 @@ const vendorSchema = new mongoose.Schema(
     // Main headquarters business hours
     businessHours: [
       {
+        _id: false,
         day: { type: Number, min: 0, max: 6 },
         open: String,
         close: String,
@@ -111,7 +126,6 @@ const vendorSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
-        ret.id = ret._id;
         delete ret._id;
         return ret;
       },
