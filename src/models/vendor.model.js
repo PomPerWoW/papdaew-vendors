@@ -10,7 +10,6 @@ const branchSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // Reference to location in the location service
     locationId: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
@@ -43,6 +42,7 @@ const branchSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
+        ret.id = ret._id;
         delete ret._id;
         return ret;
       },
@@ -126,6 +126,7 @@ const vendorSchema = new mongoose.Schema(
     toJSON: {
       virtuals: true,
       transform: (doc, ret) => {
+        ret.id = ret._id;
         delete ret._id;
         return ret;
       },
