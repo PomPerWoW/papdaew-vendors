@@ -57,7 +57,7 @@ class VendorServer {
   };
 
   #setupRoutes = app => {
-    this.#vendorRoutes.setup(app);
+    app.use('/api/v1/vendors', this.#vendorRoutes.setup(app));
   };
 
   #setupErrorHandlers = app => {
