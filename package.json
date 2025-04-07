@@ -34,6 +34,7 @@
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "amqplib": "^0.10.5",
+    "axios": "^1.8.4",
     "compression": "^1.8.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",

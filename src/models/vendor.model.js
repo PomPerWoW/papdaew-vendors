@@ -35,6 +35,79 @@ const branchSchema = new mongoose.Schema(
       enum: ['active', 'inactive', 'temporary-closed', 'coming-soon'],
       default: 'active',
     },
+    // New fields for branch statistics
+    metrics: {
+      totalCustomers: {
+        type: Number,
+        default: 0,
+      },
+      totalQueues: {
+        type: Number,
+        default: 0,
+      },
+      avgWaitTime: {
+        type: Number,
+        default: 0,
+      },
+      avgServeTime: {
+        type: Number,
+        default: 0,
+      },
+      weeklyCustomers: {
+        type: Number,
+        default: 0,
+      },
+      monthlyCustomers: {
+        type: Number,
+        default: 0,
+      },
+      peakHours: [Number],
+      peakDays: [Number],
+    },
+    // New fields for ratings
+    ratings: {
+      average: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5,
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+      distribution: {
+        five: { type: Number, default: 0 },
+        four: { type: Number, default: 0 },
+        three: { type: Number, default: 0 },
+        two: { type: Number, default: 0 },
+        one: { type: Number, default: 0 },
+      },
+      // Store recent reviews
+      reviews: [
+        {
+          userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5,
+          },
+          comment: String,
+          date: {
+            type: Date,
+            default: Date.now,
+          },
+          staffResponse: {
+            comment: String,
+            date: Date,
+          },
+        },
+      ],
+    },
   },
   {
     timestamps: true,
@@ -118,6 +191,25 @@ const vendorSchema = new mongoose.Schema(
       type: String,
       enum: ['active', 'inactive', 'pending'],
       default: 'active',
+    },
+    // Vendor-level metrics
+    metrics: {
+      totalCustomers: {
+        type: Number,
+        default: 0,
+      },
+      totalQueues: {
+        type: Number,
+        default: 0,
+      },
+      avgRating: {
+        type: Number,
+        default: 0,
+      },
+      avgWaitTime: {
+        type: Number,
+        default: 0,
+      },
     },
   },
   {

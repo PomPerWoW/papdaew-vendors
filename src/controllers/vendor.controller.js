@@ -178,12 +178,39 @@ class VendorController {
   getBranches = asyncHandler(async (req, res) => {
     const { vendorId } = req.params;
 
+    // Get staff information from headers
+    const userId = req.headers['x-user-id'];
+    const userRole = req.headers['x-user-role'];
+    const isStaffUser = userRole === 'STAFF';
+
+    // Get branches
     const branches = await this.#vendorService.getBranches(vendorId);
 
     if (branches === null) {
       throw new NotFoundError('Vendor not found');
     }
 
+    // If user is a staff member and not root (checked by middleware)
+    // Check if specific branch access is required
+    if (isStaffUser && userId) {
+      // Get staff profile to check if they're root
+      const staffProfile = await this.#vendorService.getStaffProfile(userId);
+
+      // If not root, filter branches to only include their assigned branch
+      if (staffProfile && !staffProfile.isRoot && staffProfile.branchId) {
+        // Filter branches to only include their assigned branch
+        const filteredBranches = branches.filter(
+          branch => branch._id.toString() === staffProfile.branchId.toString()
+        );
+
+        return res.status(StatusCodes.OK).json({
+          status: 'success',
+          data: filteredBranches,
+        });
+      }
+    }
+
+    // Otherwise return all branches
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: branches,
@@ -202,6 +229,140 @@ class VendorController {
     res.status(StatusCodes.OK).json({
       status: 'success',
       data: branch,
+    });
+  });
+
+  // New methods for branch metrics
+  getBranchMetrics = asyncHandler(async (req, res) => {
+    const { vendorId, branchId } = req.params;
+
+    const metrics = await this.#vendorService.getBranchMetrics(
+      vendorId,
+      branchId
+    );
+
+    if (!metrics) {
+      throw new NotFoundError('Vendor or branch not found');
+    }
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: metrics,
+    });
+  });
+
+  // New methods for branch ratings
+  getBranchRatings = asyncHandler(async (req, res) => {
+    const { vendorId, branchId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
+
+    const ratings = await this.#vendorService.getBranchRatings(
+      vendorId,
+      branchId,
+      parseInt(page),
+      parseInt(limit)
+    );
+
+    if (!ratings) {
+      throw new NotFoundError('Vendor or branch not found');
+    }
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: ratings,
+    });
+  });
+
+  addBranchRating = asyncHandler(async (req, res) => {
+    const { vendorId, branchId } = req.params;
+    const { userId, rating, comment } = req.body;
+
+    if (!userId || !rating) {
+      throw new BadRequestError('User ID and rating are required');
+    }
+
+    const newRating = await this.#vendorService.addBranchRating(
+      vendorId,
+      branchId,
+      {
+        userId,
+        rating,
+        comment,
+      }
+    );
+
+    res.status(StatusCodes.CREATED).json({
+      status: 'success',
+      data: newRating,
+    });
+  });
+
+  respondToRating = asyncHandler(async (req, res) => {
+    const { vendorId, branchId, ratingId } = req.params;
+    const { comment } = req.body;
+
+    if (!comment) {
+      throw new BadRequestError('Response comment is required');
+    }
+
+    const updatedRating = await this.#vendorService.respondToRating(
+      vendorId,
+      branchId,
+      ratingId,
+      { comment, date: new Date() }
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: updatedRating,
+    });
+  });
+
+  // Vendor analytics endpoints
+  getVendorAnalyticsOverview = asyncHandler(async (req, res) => {
+    const { vendorId } = req.params;
+    const { period = 'month' } = req.query; // 'day', 'week', 'month', 'year'
+
+    const analytics = await this.#vendorService.getVendorAnalyticsOverview(
+      vendorId,
+      period
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: analytics,
+    });
+  });
+
+  getCustomerAnalytics = asyncHandler(async (req, res) => {
+    const { vendorId } = req.params;
+    const { period = 'month', branchId } = req.query;
+
+    const analytics = await this.#vendorService.getCustomerAnalytics(
+      vendorId,
+      period,
+      branchId
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: analytics,
+    });
+  });
+
+  getRatingsAnalytics = asyncHandler(async (req, res) => {
+    const { vendorId } = req.params;
+    const { period = 'month', branchId } = req.query;
+
+    const analytics = await this.#vendorService.getRatingsAnalytics(
+      vendorId,
+      period,
+      branchId
+    );
+
+    res.status(StatusCodes.OK).json({
+      status: 'success',
+      data: analytics,
     });
   });
 }
