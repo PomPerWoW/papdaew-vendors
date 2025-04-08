@@ -3,7 +3,7 @@ const addFormats = require('ajv-formats');
 const Ajv = require('ajv');
 const { PinoLogger, InternalServerError } = require('@papdaew/shared');
 
-// const vendorEventSchemas = require('#vendors/events/schemas/vendor.events.js');
+const vendorEventSchemas = require('#vendors/events/schemas/vendor.events.js');
 const Config = require('#vendors/configs/config.js');
 
 class MessageBroker {
@@ -34,9 +34,9 @@ class MessageBroker {
   }
 
   #registerEventSchemas() {
-    // Object.entries(vendorEventSchemas).forEach(([eventName, schema]) => {
-    //   this.#validator.addSchema(schema, eventName);
-    // });
+    Object.entries(vendorEventSchemas).forEach(([eventName, schema]) => {
+      this.#validator.addSchema(schema, eventName);
+    });
   }
 
   #validateEventPayload = (eventType, payload) => {

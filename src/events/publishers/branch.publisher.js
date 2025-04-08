@@ -19,8 +19,8 @@ class BranchEvents {
         'branch.created',
         'BRANCH_CREATED',
         {
-          id: branch._id.toString(),
           vendorId: vendorId.toString(),
+          branchId: branch.id.toString(),
           branchName: branch.branchName,
           branchCode: branch.branchCode,
           status: branch.status,
@@ -29,7 +29,7 @@ class BranchEvents {
         'Branch created event published successfully'
       );
       this.#logger.info(
-        `Published branch.created event for branch ${branch._id}`
+        `Published branch.created event for branch ${branch.id}`
       );
     } catch (error) {
       this.#logger.error(
@@ -44,8 +44,8 @@ class BranchEvents {
         'branch.updated',
         'BRANCH_UPDATED',
         {
-          id: branch._id.toString(),
           vendorId: vendorId.toString(),
+          branchId: branch.id.toString(),
           branchName: branch.branchName,
           branchCode: branch.branchCode,
           status: branch.status,
@@ -54,7 +54,7 @@ class BranchEvents {
         'Branch updated event published successfully'
       );
       this.#logger.info(
-        `Published branch.updated event for branch ${branch._id}`
+        `Published branch.updated event for branch ${branch.id}`
       );
     } catch (error) {
       this.#logger.error(
@@ -69,14 +69,14 @@ class BranchEvents {
         'branch.deleted',
         'BRANCH_DELETED',
         {
-          id: branch._id.toString(),
           vendorId: vendorId.toString(),
+          branchId: branch.id.toString(),
           branchName: branch.branchName,
         },
         'Branch deleted event published successfully'
       );
       this.#logger.info(
-        `Published branch.deleted event for branch ${branch._id}`
+        `Published branch.deleted event for branch ${branch.id}`
       );
     } catch (error) {
       this.#logger.error(

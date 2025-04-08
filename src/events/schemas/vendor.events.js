@@ -1,9 +1,9 @@
 const BRANCH_CREATED = {
   type: 'object',
-  required: ['id', 'vendorId', 'branchName'],
+  required: ['vendorId', 'branchId', 'branchName'],
   properties: {
-    id: { type: 'string' },
     vendorId: { type: 'string' },
+    branchId: { type: 'string' },
     branchName: { type: 'string' },
     branchCode: { type: 'string' },
     status: { type: 'string' },
@@ -13,10 +13,10 @@ const BRANCH_CREATED = {
 
 const BRANCH_UPDATED = {
   type: 'object',
-  required: ['id', 'vendorId', 'branchName'],
+  required: ['vendorId', 'branchId', 'branchName'],
   properties: {
-    id: { type: 'string' },
     vendorId: { type: 'string' },
+    branchId: { type: 'string' },
     branchName: { type: 'string' },
     branchCode: { type: 'string' },
     status: { type: 'string' },
@@ -26,11 +26,10 @@ const BRANCH_UPDATED = {
 
 const BRANCH_DELETED = {
   type: 'object',
-  required: ['id', 'vendorId'],
+  required: ['vendorId', 'branchId'],
   properties: {
-    id: { type: 'string' },
     vendorId: { type: 'string' },
-    branchName: { type: 'string' },
+    branchId: { type: 'string' },
   },
 };
 
